@@ -1,0 +1,10 @@
+*{margin:0;padding:0;}
+
+.test{
+    border: 1px solid red;
+}
+
+.row{
+    height: 5em;
+    display: flex;
+}
