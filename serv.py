@@ -28,6 +28,7 @@ def getFiles(path):
 def getIndex():
     return getFiles("index.html")
 
+## serve other services
 @app.post("/login")
 def login():
     username = request.forms.get("username")
@@ -42,5 +43,5 @@ def login():
 
 #  MAIN
 if __name__ == "__main__":
-    print "Instantiating server ... "
+    # print "Instantiating server ... "
     run(app, host="localhost", port=3001, debug=True, reloader=True)
