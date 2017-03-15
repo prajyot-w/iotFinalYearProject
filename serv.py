@@ -3,6 +3,7 @@
 
 # IMPORTS
 from bottle import Bottle, run, static_file, request
+import servPkg
 app = Bottle()
 ERROR_MSG = """
             <style>*{margin:0;padding:0}</style>
