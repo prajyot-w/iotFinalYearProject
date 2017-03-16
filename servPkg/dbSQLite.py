@@ -30,14 +30,16 @@ class Database:
                 name varchar(50) not null,
                 phone_no varchar(13) not null,
                 email varchar(50) not null,
-                password varchar(60) not null
+                password varchar(60) not null,
+                cookie varchar(250)
             )
         """
 
-        deviceTable = """
-            CREATE TABLE device (
+        vehicalTable = """
+            CREATE TABLE vehical (
                 id int primary key,
-                type varchar(10) not null,
+                name varchar(60) null,
+                description varchar(250),
                 device_unique_key varchar(50) not null
             )
         """
@@ -47,10 +49,22 @@ class Database:
                 userId int not null,
                 deviceId int not null,
                 FOREIGN KEY (userId) REFERENCES user(id),
-                FOREIGN KEY (deviceId) REFERENCES device(id)
+                FOREIGN KEY (deviceId) REFERENCES vehical(id)
             )
         """
-        queryList = (userTable, deviceTable, mapTable)
+
+        notifications = """
+            CREATE TABLE notification (
+                id int not null,
+                type varchar(250),
+                message varchar(250),
+                status varchar(20),
+                timestamp varchar(50),
+                action varchar(20),
+                FOREIGN KEY (id) REFERENCES vehical(id)
+            )
+        """
+        queryList = (userTable, vehicalTable, mapTable, notifications)
         for query in queryList:
             try:
                 self.conn.execute(query)
