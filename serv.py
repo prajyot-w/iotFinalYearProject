@@ -49,5 +49,5 @@ def login():
 print "LOG MESSAGE BEFORE MAIN"
 if __name__ == "__main__":
     print "Instantiating server ... "
-    run(app, server='gevent' ,port=os.environ.get('PORT',5000), debug=True, reloader=True)
+    run(app, server='gevent', port=os.environ.get('PORT', 5000))
 
