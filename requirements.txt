@@ -1,7 +1,13 @@
 appdirs==1.4.3
 bottle==0.12.13
+click==6.7
+Flask==0.12
 gevent==1.2.1
 greenlet==0.4.12
+itsdangerous==0.24
+Jinja2==2.9.5
+MarkupSafe==1.0
 packaging==16.8
 pyparsing==2.2.0
 six==1.10.0
+Werkzeug==0.12.1
