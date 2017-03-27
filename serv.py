@@ -5,7 +5,8 @@
 import gevent.monkey; gevent.monkey.patch_all()
 from bottle import Bottle, run, static_file, request
 import os
-import servPkg
+#import servPkg
+
 app = Bottle()
 ERROR_MSG = """
             <style>*{margin:0;padding:0}</style>
@@ -46,5 +47,5 @@ def login():
 
 #  MAIN
 if __name__ == "__main__":
-    # print "Instantiating server ... "
+    print "Instantiating server ... "
     run(app, server='gevent' ,port=os.environ.get('PORT',5000), debug=True, reloader=True)
