@@ -48,6 +48,8 @@ def login():
 #  MAIN
 print "LOG MESSAGE BEFORE MAIN"
 if __name__ == "__main__":
+    port_no = os.environ.get('PORT',5000)
     print "Instantiating server ... "
-    run(app, server='gevent', port=os.environ.get('PORT', 5000))
+    print "Received port from os as :: " + port_no
+    run(app, server='gevent', port=port_no)
 
