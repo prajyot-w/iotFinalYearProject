@@ -1,70 +1,72 @@
 #!/usr/bin/env python
 ## Final server file
 
-# IMPORTS
-# import gevent.monkey; gevent.monkey.patch_all()
-# from bottle import Bottle, run, static_file, request
-# import os
-# #import servPkg
-#
-# app = Bottle()
-# ERROR_MSG = """
-#             <style>*{margin:0;padding:0}</style>
-#             <div style='display:flex;height: 98%;'>
-#                 <span style='margin: auto auto; font-size: 30px; font-weight: 700;'>
-#                     Nothing Here. Sorry !
-#                 </span>
-#             </div>
-#             """
-#
-# ### Server/REST Methods
-# ## GERERAL ERROR MSG
-# @app.error(404)
-# def error404(error):
-#     return ERROR_MSG
-#
-# ## serve website
-# @app.route("/www/<path:path>")
-# def getFiles(path):
-#     return static_file(path, root="./www/")
-#
-# @app.route("/")
-# def getIndex():
-#     return getFiles("index.html")
-#
-# ## serve other services
-# @app.post("/login")
-# def login():
-#     username = request.forms.get("username")
-#     password = request.forms.get("password")
-#     if username=='prajyot' and password=='walali':
-#         return "<div style='text-align:center; font-size: 30px; font-weight: 700;'>You have been successfully loged in !!</div>"
-#     else:
-#         return "<div style='text-align:center; font-size: 30px; font-weight: 700; color:red;'>Invalid Credentials</div>"
-#
-# ## serve rest services here
-# ## use `/restapi` as root for all rest services
-#
-# #  MAIN
-# print "LOG MESSAGE BEFORE MAIN"
-# if __name__ == "__main__":
-#     port_no = int(os.environ.get('PORT', 5000))
-#     print "Instantiating server ... "
-#     print "Received port from os as :: " + str(port_no)
-#     run(app, server='gevent', port=port_no)
-
 import os
-from flask import Flask
+from flask import Flask, send_from_directory, request
+import dbcon
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
+INVALID_REQUEST = "<h1 style='color:red; text-align:center;>Invalid Request</h1>"
+SUCCESS_MESSAGE = "<h1>SUCCESSFULL</h1>"
+FAILURE_MESSAGE = "<h1>FAILED</h1>"
 
+## serve website
 @app.route("/")
-def hello():
-    return "<h1>Hello Everyone</h1>"
+def getIndex():
+    return send_from_directory("www", "index.html")
 
 
+@app.route("/<path:path>")
+def getFiles(path):
+    return send_from_directory("www", path)
+
+## create all db tables
+@app.route("/createall")
+def createAll():
+    try:
+        dbcon.createAll()
+        return "Successful"
+    except Exception:
+        return "Failed"
+
+## serve general services
+@app.route("/reguser", methods=['POST'])
+def regUser():
+    if request.method == 'POST':
+        try:
+            if dbcon.regUser(request.form["name"], request.form["email"], request.form["password1"], request.form["password2"]):
+                return SUCCESS_MESSAGE
+            else:
+                return FAILURE_MESSAGE
+        except Exception, e:
+            print "EXCEPTION AT: serv.py > regUser() > if"
+            print str(e)
+            return FAILURE_MESSAGE
+    else:
+        return INVALID_REQUEST
+
+
+@app.route("/login", methods=['POST'])
+def checkLogin():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if dbcon.login(username, password):
+            return SUCCESS_MESSAGE
+        else:
+            return FAILURE_MESSAGE
+    else:
+        return INVALID_REQUEST
+
+
+## MAIN METHOD
 if __name__ == "__main__":
+    # dbManager = servPkg.DbManager(app)
+    app = dbcon.inject_db(app)
+    app.app_context().push()
     PORTNO = int(os.environ.get("PORT", 2121))
     print "Initiating server on port " + str(PORTNO)
-    app.run(host='0.0.0.0', port=PORTNO)
+    app.run(host='0.0.0.0', port=PORTNO)  # remove debug before deploying
