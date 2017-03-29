@@ -48,6 +48,28 @@ def regUser():
     else:
         return INVALID_REQUEST
 
+@app.route("/regvehicle", methods=['POST'])
+def regVehicle():
+    """
+    TODO :
+    check user authentication 
+    before registration
+    """
+    if request.method == 'POST':
+        name = request.form["name"]
+        description = request.form["description"]
+        deviceid = request.form['deviceid']
+        lastchecked = "N/A"
+        useremail = request.form["username"]
+        try:
+            if dbcon.regVehicle(name, description, deviceid, lastchecked, useremail):
+                return SUCCESS_MESSAGE
+            else:
+                return FAILURE_MESSAGE
+        except Exception, e:
+            print "EXCEPTION :: " + str(e)
+            return FAILURE_MESSAGE
+
 
 @app.route("/login", methods=['POST'])
 def checkLogin():

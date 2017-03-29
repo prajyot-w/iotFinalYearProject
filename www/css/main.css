@@ -4,7 +4,7 @@
     border: 1px solid red;
 }
 
-.row{
-    height: 5em;
-    display: flex;
+.box{
+    border: 1px solid #ddd;
+    padding: 2em;
 }
