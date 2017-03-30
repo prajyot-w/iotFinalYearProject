@@ -4,6 +4,7 @@ from pytz import timezone
 import hashlib
 
 db = SQLAlchemy()
+SECRET_KEY = "Prajyot Prabhat Ranvijay"
 
 ## DB TABLES
 class User(db.Model):
@@ -74,7 +75,7 @@ def regUser(name, email, password1, password2):
     user = None
     if (name.find("'") < 0 and name.find('"') < 0 and email.find("'") < 0 and email.find('"') < 0 and password1.find(
         "'") < 0 and password1.find('"') < 0 and password2.find("'") < 0 and password2.find('"') < 0):
-        if(password1 == password2):
+        if(password1 == password2 and password1 != None and password1 != ""):
             password = hashlib.sha224(password1).hexdigest()
             user = User(name, email, password)
             db.session.add(user)
@@ -116,6 +117,11 @@ def login(uname, paswd):
         return False
     else:
         return True
+
+def generateKey(username):
+    toDigest = SECRET_KEY + username + datetime.now(timezone("Asia/Kolkata")).strftime('%Y-%m-%d %H:%M:%S')
+    hexDigest = hashlib.sha224(toDigest).hexdigest()
+    return hexDigest
 
 ## table management
 def createAll():

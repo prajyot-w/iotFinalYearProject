@@ -7,25 +7,25 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="css/main.css">
-    <title>Title - Login</title>
+    <title>Register Vehicle</title>
 </head>
 <body>
 <div class="container">
     <div class="row">
         <div class="login-form">
             <h1 class="logo">Title</h1>
-            <form action="/login" method="post">
+            <form action="/regvehicle" method="post">
                 <div class="form-group">
-                    <input type="text" name="username" class="form-control" placeholder="Email">
+                    <input type="text" name="name" class="form-control" placeholder="Name your car">
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" class="form-control" placeholder="Password">
+                    <input type="text" name="description" class="form-control" placeholder="Describe your car">
                 </div>
-                <div class="form-group"><input type="submit" class="form-control btn btn-primary" value="Login"></div>
+                <div class="form-group">
+                    <input type="text" name="deviceid" class="form-control" placeholder="Device Id">
+                </div>
+                <div class="form-group"><input type="submit" class="form-control btn btn-primary" value="Register Vehicle"></div>
             </form>
-        </div>
-        <div class="redirect">
-            <span>Do not have an account?&nbsp;&nbsp;&nbsp;Register&nbsp;&nbsp;&nbsp;<a href="register.html">here</a> </span>
         </div>
     </div>
 </div>
