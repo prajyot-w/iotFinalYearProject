@@ -23,8 +23,6 @@ def checkCreds(username, key):
 ## serve website
 @app.route("/")
 def getIndex():
-    print "SESSION :: "
-    print session
     try:
         username = request.cookies.get("username")
         key = request.cookies.get("key")
@@ -102,7 +100,7 @@ def checkLogin():
         password = request.form['password']
         if dbcon.login(username, password):
             key = dbcon.generateKey(username)
-            resp = make_response(SUCCESS_MESSAGE)
+            resp = make_response(SUCCESS_MESSAGE + "<script>window.location='home.html'</script>")
             resp.set_cookie("username", username)
             resp.set_cookie("key", key)
             session[username] = key
