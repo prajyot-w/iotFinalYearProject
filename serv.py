@@ -140,4 +140,4 @@ if __name__ == "__main__":
     app.app_context().push()
     PORTNO = int(os.environ.get("PORT", 2121))
     print "Initiating server on port " + str(PORTNO)
-    app.run(host='0.0.0.0', port=PORTNO, debug=True)  # remove debug before deploying
+    app.run(host='0.0.0.0', port=PORTNO)  # remove debug before deploying
