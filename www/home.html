@@ -31,6 +31,25 @@
         </div>
     </div>
     <div class="container">
+        <div class="row" ng-if="vehicleInfo['status'] == 'success'">
+            <div class="col-sm-12 col-md-12 col-xs-12">
+                <div class="card">
+                    <div class="card-header">
+                        Vehicle Info
+                    </div>
+                    <div class="card-body">
+                        <div class="card-list">
+                            <div class="card-label">Name</div>
+                            <div class="card-label-data">{{vehicleInfo['name']}}</div>
+                        </div>
+                        <div class="card-list">
+                            <div class="card-label">Description</div>
+                            <div class="card-label-data">{{vehicleInfo['description']}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!--Content Body-->
         <div class="row content-body">
             <div class="no-data-content">

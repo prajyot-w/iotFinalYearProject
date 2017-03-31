@@ -86,6 +86,15 @@ def regUser(name, email, password1, password2):
     else:
         return False
 
+def getVehicle(email):
+    query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from user where email='%s'))" % email
+    result = db.engine.execute(query).fetchall()
+    resObj = {}
+    if len(result) == 1:
+        resObj["name"] = result[0][1]
+        resObj["description"] = result[0][2]
+    return resObj
+
 def regVehicle(name, description, device_unique_key, last_checked, user_name):
     """
     Register device and map user accordingly.

@@ -4,15 +4,43 @@
 import os
 from flask import Flask, send_from_directory, request, session, make_response, redirect, url_for
 import dbcon
+import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = "prajyot"
 
-INVALID_REQUEST = "<h1 style='color:red; text-align:center;>Invalid Request</h1>"
-SUCCESS_MESSAGE = "<h1>SUCCESSFULL</h1>"
-FAILURE_MESSAGE = "<h1>FAILED</h1>"
+INVALID_REQUEST = """
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <style>
+    body{
+    display: flex; 
+    color: palevioletred;
+    font-family: 'Nunito', sans-serif;
+    }
+    body>*{margin: auto auto;}
+    </style>
+    <h1>Invalid Request</h1>
+    <script>
+    setTimeout(function(){window.location="/";},2000);
+    </script>
+"""
+FAILURE_MESSAGE = """
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <style>
+    body{
+    display: flex; 
+    color: #999;
+    font-family: 'Nunito', sans-serif;
+    }
+    body>*{margin: auto auto;}
+    </style>
+    <h1>Failed</h1>
+    <script>
+    setTimeout(function(){window.location="/";},2000);
+    </script>
+"""
 
 
 def checkCreds(username, key):
@@ -23,29 +51,31 @@ def checkCreds(username, key):
 ## serve website
 @app.route("/")
 def getIndex():
-    try:
-        username = request.cookies.get("username")
-        key = request.cookies.get("key")
-        if checkCreds(username, key):
-            return send_from_directory("www", "home.html")
-        else:
-            return send_from_directory("www", "index.html")
-    except Exception:
-        return send_from_directory("www", "index.html")
+    return send_from_directory("www", "index.html")
 
 
 @app.route("/<path:path>")
 def getFiles(path):
     return send_from_directory("www", path)
 
-## create all db tables
-@app.route("/createall")
-def createAll():
-    try:
-        dbcon.createAll()
-        return "Successful"
-    except Exception:
-        return "Failed"
+
+## api services
+@app.route("/api/getvehicle", methods=['GET'])
+def getVehicle():
+    email = request.cookies.get("username")
+    key = request.cookies.get("key")
+    if checkCreds(email, key):
+        resp = dbcon.getVehicle(email)
+        if resp == {}:
+            resp["status"] = "failed"
+        else:
+            resp["status"] = "success"
+    else:
+        resp = {"status": "failed"}
+    resp = json.dumps(resp)
+    return resp
+
+
 
 ## serve general services
 @app.route("/reguser", methods=['POST'])
@@ -53,7 +83,7 @@ def regUser():
     if request.method == 'POST':
         try:
             if dbcon.regUser(request.form["name"], request.form["email"], request.form["password1"], request.form["password2"]):
-                resp = make_response(SUCCESS_MESSAGE + "<script>window.location='registervehicle.html';</script>")
+                resp = make_response("<script>window.location='registervehicle.html';</script>")
                 resp.set_cookie("email", request.form["email"])
                 return resp
             else:
@@ -67,6 +97,21 @@ def regUser():
 
 @app.route("/regvehicle", methods=['POST'])
 def regVehicle():
+    FINAL_SUCCESS_MESSAGE = """
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <style>
+    body{
+    display: flex; 
+    color: #999;
+    font-family: 'Nunito', sans-serif;
+    }
+    body>*{margin: auto auto;}
+    </style>
+    <h1>Registration process completed successfully.</h1>
+    <script>
+    setTimeout(function(){window.location="/";},2000);
+    </script>
+    """
     if request.method == 'POST':
         name = request.form["name"]
         description = request.form["description"]
@@ -75,7 +120,7 @@ def regVehicle():
         useremail = request.cookies.get("email")
         try:
             if dbcon.regVehicle(name, description, deviceid, lastchecked, useremail):
-                resp = make_response(SUCCESS_MESSAGE + "<script>setTimeout(function(){window.location='index.html'}, 3000);</script>")
+                resp = make_response(FINAL_SUCCESS_MESSAGE + "<script>setTimeout(function(){window.location='index.html'}, 3000);</script>")
                 resp.set_cookie("email", "", expires=0)
                 return resp
             else:
@@ -108,6 +153,16 @@ def logout():
     resp.set_cookie("key", "", expires=0)
     return resp
 
+@app.route("/checkcreds", methods=['GET'])
+def chkCreds():
+    resp = {"status" : "unknown"}
+    if checkCreds(request.cookies.get("username"), request.cookies.get("key")):
+        resp["status"] = "success"
+    else:
+        resp["status"] = "failed"
+    resp = make_response(json.dumps(resp))
+    return resp
+
 @app.route("/login", methods=['GET', 'POST'])
 def checkLogin():
     if request.method == 'POST':
@@ -135,7 +190,6 @@ def checkLogin():
 
 ## MAIN METHOD
 if __name__ == "__main__":
-    # dbManager = servPkg.DbManager(app)
     app = dbcon.inject_db(app)
     app.app_context().push()
     PORTNO = int(os.environ.get("PORT", 2121))

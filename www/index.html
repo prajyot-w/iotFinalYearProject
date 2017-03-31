@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="index">
 <head>
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
@@ -7,31 +7,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
+    <!-- Angular Components -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular-cookies.js"></script>
+    <script src="js/index.js"></script>
     <link rel="stylesheet" href="css/main.css">
     <title>Title - Login</title>
 </head>
-<body>
-<div class="container">
-    <div class="row">
-        <div class="login-form">
-            <h1 class="logo">CarSecure</h1>
-            <form action="/login" method="post">
-                <div class="form-group">
-                    <input type="text" name="username" class="form-control" placeholder="Email" required>
+<body ng-controller="MainCtrl">
+    <div ng-if="notLoggedIn">
+        <div class="container">
+            <div class="row">
+                <div class="login-form">
+                    <h1 class="logo">CarSecure</h1>
+                    <form action="/login" method="post">
+                        <div class="form-group">
+                            <input type="text" name="username" class="form-control" placeholder="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        </div>
+                        <div class="form-group"><input type="submit" class="form-control btn btn-primary" value="Login"></div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                <div class="redirect">
+                    <span>Do not have an account?&nbsp;&nbsp;&nbsp;Register&nbsp;&nbsp;&nbsp;<a href="register.html">here</a> </span>
                 </div>
-                <div class="form-group"><input type="submit" class="form-control btn btn-primary" value="Login"></div>
-            </form>
-        </div>
-        <div class="redirect">
-            <span>Do not have an account?&nbsp;&nbsp;&nbsp;Register&nbsp;&nbsp;&nbsp;<a href="register.html">here</a> </span>
-        </div>
-        <div class="creators">
-            Created by Prajyot Walali, Prabhat Singh and Ranvijay Prajapati.
+                <div class="creators">
+                    Created by Prajyot Walali, Prabhat Singh and Ranvijay Prajapati.
+                </div>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>
