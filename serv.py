@@ -86,9 +86,24 @@ def regVehicle():
 
 @app.route("/logout", methods=['GET'])
 def logout():
+    LOG_OUT_MESSAGE = """
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <style>
+    body{
+    display: flex; 
+    color: #999;
+    font-family: 'Nunito', sans-serif;
+    }
+    body>*{margin: auto auto;}
+    </style>
+    <h1>You have been successfully logged out.</h1>
+    <script>
+    setTimeout(function(){window.location="/";},2000);
+    </script>
+    """
     username = request.cookies.get('username')
     session.pop(username, None)
-    resp = make_response("logout")
+    resp = make_response(LOG_OUT_MESSAGE)
     resp.set_cookie("username", "", expires=0)
     resp.set_cookie("key", "", expires=0)
     return resp
@@ -100,7 +115,7 @@ def checkLogin():
         password = request.form['password']
         if dbcon.login(username, password):
             key = dbcon.generateKey(username)
-            resp = make_response(SUCCESS_MESSAGE + "<script>window.location='home.html'</script>")
+            resp = make_response("<script>window.location='home.html'</script>")
             resp.set_cookie("username", username)
             resp.set_cookie("key", key)
             session[username] = key
@@ -112,7 +127,7 @@ def checkLogin():
             username = request.cookies.get("username")
             key = request.cookies.get("key")
             if checkCreds(username, key):
-                return SUCCESS_MESSAGE
+                return "<script>window.location='home.html'</script>"
         except Exception:
             return FAILURE_MESSAGE
         return INVALID_REQUEST
@@ -125,4 +140,4 @@ if __name__ == "__main__":
     app.app_context().push()
     PORTNO = int(os.environ.get("PORT", 2121))
     print "Initiating server on port " + str(PORTNO)
-    app.run(host='0.0.0.0', port=PORTNO)  # remove debug before deploying
+    app.run(host='0.0.0.0', port=PORTNO, debug=True)  # remove debug before deploying

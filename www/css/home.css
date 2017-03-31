@@ -1,0 +1,79 @@
+*{margin:0;padding:0;font-family: 'Lato', sans-serif;}
+
+.test{border: 1px solid red;}
+
+.creators{
+    margin: 1em auto;
+    /*border: 1px solid red;*/
+    text-align: center;
+    color: #cccccc;
+}
+
+body{background-color: #ffffff;}
+
+.header-row{
+    /*background-color: #eeeeee;*/
+    border-bottom: 2px solid #dddddd;
+    color: dimgray;
+}
+
+.flex-wrap{
+    display: flex;
+}
+.header-wrap{
+    margin-bottom: 0.5em;
+}
+.header-wrap > div{
+    flex: 1;
+}
+
+.header-wrap > div:nth-child(1), .header-wrap > div:nth-child(3){
+    font-size: 1.7em;
+    display: flex;
+}
+
+.header-wrap > div:nth-child(3){justify-content: flex-end;}
+
+.header-wrap > div:nth-child(1) > span, .header-wrap > div:nth-child(3) > span{
+    margin: auto 0;
+}
+
+.header-wrap > div:nth-child(1) > span{
+    margin-left: 1em;
+}
+
+.header-wrap > div:nth-child(3) > span{
+    margin-right: 1em;
+    cursor: pointer;
+}
+
+.header-wrap > div:nth-child(2){
+    text-align: center;
+    font-size: 2.7em;
+    font-family: 'Lobster', cursive;
+}
+
+.content-body{
+    height: 90vh;
+    display: flex;
+}
+
+.content-body > *{
+    margin: auto auto;
+}
+
+.no-data-content{
+    font-size: 1.7em;
+    color: #aaaaaa;
+}
+
+.no-data-content::after{
+    margin-left: 0.5em;
+    content: "Sorry. No data available.";
+}
+
+@media (max-height: 550px){
+    .content-body{
+        height: 85vh;
+    }
+}

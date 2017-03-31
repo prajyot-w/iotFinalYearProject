@@ -1,10 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="home">
 <head>
     <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
+    <!-- Angular Components -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular-cookies.js"></script>
+    <!-- END -->
+    <script src="js/home.js"></script>
+    <link href="css/home.css" rel="stylesheet">
     <title>Home Page</title>
 </head>
-<body>
-    <h1>Home Page</h1>
+<body ng-controller="MainCtrl">
+<div ng-if="loggedIn">
+    <div class="container-fluid">
+        <div class="row header-row">
+            <div class="col-sm-12 col-md-12 col-xs-12">
+                <div class="flex-wrap header-wrap">
+                    <div class=""><span class="glyphicon glyphicon-menu-hamburger"></span></div>
+                    <div class="">CarSecure</div>
+                    <div class="" ng-click="logout()">
+                        <span class="glyphicon glyphicon-log-out" alt="logout"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <!--Content Body-->
+        <div class="row content-body">
+            <div class="no-data-content">
+                <span class="glyphicon glyphicon-floppy-remove"></span>
+            </div>
+        </div>
+        <!--Footer-->
+        <div class="row">
+            <div class="creators">Created by Prajyot Walali, Prabhat Singh and Ranvijay Prajapati</div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

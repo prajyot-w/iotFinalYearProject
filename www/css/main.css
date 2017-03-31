@@ -17,6 +17,7 @@ body{
 
 .logo{
     text-align: center;
+    font-family: 'Lobster', cursive;
 }
 
 .login-form > *{
@@ -31,6 +32,13 @@ body{
 
 .redirect{
     text-align: center;
+}
+
+.creators{
+    margin-top: 1em;
+    /*border: 1px solid red;*/
+    text-align: center;
+    color: #cccccc;
 }
 
 .redirect > span > a:link, .redirect>span>a:visited, .redirect>span>a:hover{
