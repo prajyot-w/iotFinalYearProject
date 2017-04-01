@@ -1,8 +1,0 @@
-FOR RESTFUL SERVER
-==============================================================
-## USE BOTTLE in python
-## run `sudo pip install bottle bottle_sqlite` to install
-## https://bottlepy.org/docs/dev/
-## https://www.youtube.com/watch?v=BHAUJUuhiDw
-
-## USE JSON lib to convert from json string to dict and vice versa
