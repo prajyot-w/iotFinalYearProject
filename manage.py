@@ -27,6 +27,8 @@ if __name__ == '__main__':
             print "Recreating All Tables"
             dbcon.dropAll()
             dbcon.createAll()
+        elif argument == "rollback":
+            dbcon.db.session.rollback()
         print "Done."
     except Exception, e:
         print "Unsuccessful :: " + str(e)
