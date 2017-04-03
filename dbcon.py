@@ -51,7 +51,7 @@ class Notification(db.Model):
         self.deviceid = deviceid
         self.status = "WAITING"
         self.timestamp = datetime.now(timezone("Asia/Kolkata")).strftime('%Y-%m-%d %H:%M:%S')  # sets timestamp according to IST
-        self.useraction = ""
+        self.useraction = "NONE"
 
     def __repr__(self):
         return "<Notification id %r for %r at %r>" % (self.id, self.deviceid, self.timestamp)
@@ -95,7 +95,7 @@ def regUser(name, email, password1, password2):
         return False
 
 def getVehicle(email):
-    query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from user where email='%s'))" % email
+    query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from public.user where email='%s'))" % email
     result = db.engine.execute(query).fetchall()
     resObj = {}
     if len(result) == 1:
@@ -146,7 +146,8 @@ def generateKey(username):
     return hexDigest
 
 def notify(deviceid):
-    notification = Notification(deviceid)
+    vehicle = Vehicle.query.filter_by(device_unique_key=deviceid).first()
+    notification = Notification(vehicle.id)
     try:
         try:
             db.session.add(notification)
@@ -178,7 +179,7 @@ def updatedeviceaction(id, action):
 
 
 def getallnotifiactions(email):
-    query = """select * from public.notification where deviceid in (select v.device_unique_key as device_unique_key from public.vehicle v INNER JOIN (select udm.deviceid from public.user_device_map udm INNER JOIN public.user ut ON ut.id = udm.userid where ut.email='%s') x ON x.deviceid=v.id)""" % email
+    query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from public.user where email='%s'))""" % email
     result = db.engine.execute(query).fetchall()
     resp = []
     for x in result:

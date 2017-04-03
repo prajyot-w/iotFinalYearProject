@@ -79,7 +79,7 @@ def getVehicle():
 
 @app.route("/api/notify", methods=["POST"])
 def notify():
-    resp={}
+    resp = {}
     deviceid = request.form.get("deviceid")
     respObj = dbcon.notify(deviceid)
     if respObj:
