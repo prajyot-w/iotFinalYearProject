@@ -2,11 +2,13 @@
 ## Final server file
 
 import os
-from flask import Flask, send_from_directory, request, session, make_response, redirect, url_for
+from flask import Flask, send_from_directory, request, session, make_response
+from flask_cors import CORS
 import dbcon
 import json
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = "prajyot"
@@ -75,7 +77,62 @@ def getVehicle():
     resp = json.dumps(resp)
     return resp
 
+@app.route("/api/notify", methods=["POST"])
+def notify():
+    resp={}
+    deviceid = request.form.get("deviceid")
+    respObj = dbcon.notify(deviceid)
+    if respObj:
+        resp["status"] = "success"
+        resp["id"] = respObj.id
+    else:
+        resp["status"] = "failed"
+    resp = json.dumps(resp)
+    return resp
 
+@app.route("/api/getnotificationbyid", methods=["POST"])
+def getnotificationbyid():
+    id = request.form.get("id")
+    resp = {}
+    respObj = dbcon.getnotificationbyid(id)
+    if respObj:
+        resp["status"] = "success"
+        resp["id"] = respObj.id
+        resp["useraction"] = respObj.useraction
+    else:
+        resp["status"] = "failed"
+    resp = json.dumps(resp)
+    return resp
+
+@app.route("/api/updatedeviceaction", methods=["POST"])
+def updatedeviceaction():
+    ## ONLY ACCEPTS 'BLOCK' OR 'ALLOW'
+    resp = {}
+    id =request.form.get("id")
+    action = request.form.get("action")
+    if dbcon.updatedeviceaction(id, action):
+        resp["status"] = "success"
+    else:
+        resp["status"] = "failed"
+    resp = json.dumps(resp)
+    return resp
+
+@app.route("/api/getallnotifications", methods=["POST", "GET"])
+def getallnotifications():
+    email = request.cookies.get("username")
+    key = request.cookies.get("key")
+    resp = {}
+    if checkCreds(email, key):
+        respObj = dbcon.getallnotifiactions(email)
+        if respObj != False:
+            resp["status"] = "success"
+            resp["data"] = respObj
+        else:
+            resp["status"] = "failed"
+    else:
+        resp["status"] = "failed"
+    resp = json.dumps(resp)
+    return resp
 
 ## serve general services
 @app.route("/reguser", methods=['POST'])

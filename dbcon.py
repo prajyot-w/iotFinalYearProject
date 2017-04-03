@@ -53,6 +53,9 @@ class Notification(db.Model):
         self.timestamp = datetime.now(timezone("Asia/Kolkata")).strftime('%Y-%m-%d %H:%M:%S')  # sets timestamp according to IST
         self.useraction = ""
 
+    def __repr__(self):
+        return "<Notification id %r for %r at %r>" % (self.id, self.deviceid, self.timestamp)
+
 
 class UserDeviceMap(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -131,6 +134,44 @@ def generateKey(username):
     toDigest = SECRET_KEY + username + datetime.now(timezone("Asia/Kolkata")).strftime('%Y-%m-%d %H:%M:%S')
     hexDigest = hashlib.sha224(toDigest).hexdigest()
     return hexDigest
+
+def notify(deviceid):
+    notification = Notification(deviceid)
+    try:
+        db.session.add(notification)
+        db.session.commit()
+        return notification
+    except Exception, e:
+        print str(e)
+        return False
+
+def getnotificationbyid(id):
+    resp = Notification.query.filter_by(id=id).first()
+    if resp != None:
+        return resp
+    else:
+        return False
+
+def updatedeviceaction(id, action):
+    query = "update notification set status='%s' where id='%s'" % (action, id)
+    try:
+        db.engine.execute(query)
+        return True
+    except Exception, e:
+        print str(e)
+        return False
+
+
+def getallnotifiactions(email):
+    query = """select * from notification where deviceid in (select v.device_unique_key as device_unique_key from vehicle v INNER JOIN (select udm.deviceid from user_device_map udm INNER JOIN user ut ON ut.id = udm.userid where ut.email="%s") x ON x.deviceid=v.id)""" % email
+    result = db.engine.execute(query).fetchall()
+    resp = []
+    for x in result:
+        resp.append({"id": x[0], "deviceid": x[1], "timestamp": x[2], "useraction": x[3], "status": x[4]})
+    if len(resp) > 0:
+        return resp
+    else:
+        return False
 
 ## table management
 def createAll():
