@@ -95,13 +95,18 @@ def regUser(name, email, password1, password2):
         return False
 
 def getVehicle(email):
-    query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from public.user where email='%s'))" % email
-    result = db.engine.execute(query).fetchall()
-    resObj = {}
-    if len(result) == 1:
-        resObj["name"] = result[0][1]
-        resObj["description"] = result[0][2]
-    return resObj
+    # query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from public.user where email='%s'))" % email
+    # try:
+    #     result = db.engine.execute(query).fetchall()
+    # except Exception, e:
+    #     print str(e)
+    #     db.session.rollback()
+    # resObj = {}
+    # if len(result) == 1:
+    #     resObj["name"] = result[0][1]
+    #     resObj["description"] = result[0][2]
+    # return resObj
+    return ""
 
 def regVehicle(name, description, device_unique_key, last_checked, user_name):
     """
@@ -162,6 +167,7 @@ def notify(deviceid):
         return False
 
 def getnotificationbyid(id):
+    print type(id)
     resp = Notification.query.filter_by(id=id).first()
     if resp != None:
         return resp
@@ -174,6 +180,7 @@ def updatedeviceaction(id, action):
         db.engine.execute(query)
         return True
     except Exception, e:
+        db.session.rollback()
         print str(e)
         return False
 
@@ -183,20 +190,22 @@ def updateuseraction(id, action):
         db.engine.execute(query)
         return True
     except Exception, e:
+        db.session.rollback()
         print str(e)
         return False
 
 
 def getallnotifiactions(email):
-    query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from public.user where email='%s')) order by timestamp desc""" % email
-    result = db.engine.execute(query).fetchall()
-    resp = []
-    for x in result:
-        resp.append({"id": x[0], "deviceid": x[1], "timestamp": x[2], "useraction": x[3], "status": x[4]})
-    if len(resp) > 0:
-        return resp
-    else:
-        return False
+    # query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from public.user where email='%s')) order by timestamp desc""" % email
+    # result = db.engine.execute(query).fetchall()
+    # resp = []
+    # for x in result:
+    #     resp.append({"id": x[0], "deviceid": x[1], "timestamp": x[2], "useraction": x[3], "status": x[4]})
+    # if len(resp) > 0:
+    #     return resp
+    # else:
+    #     return False
+    return ""
 
 ## table management
 def createAll():
