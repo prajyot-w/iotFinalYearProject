@@ -81,7 +81,12 @@ def regUser(name, email, password1, password2):
         if(password1 == password2 and password1 != None and password1 != ""):
             password = hashlib.sha224(password1).hexdigest()
             user = User(name, email, password)
-            db.session.add(user)
+            try:
+                db.session.add(user)
+            except Exception, e:
+                db.session.rollback()
+                print(str(e))
+                return False
             db.session.commit()
             return True
         else:
@@ -109,7 +114,12 @@ def regVehicle(name, description, device_unique_key, last_checked, user_name):
         # register vehicle and map user in following user table
         try:
             user = user[0]
-            db.session.add(vehicle)
+            try:
+                db.session.add(vehicle)
+            except Exception, e:
+                db.session.rollback()
+                print str(e)
+                return False
             db.session.commit()
             udmap = UserDeviceMap(user.id, vehicle.id)
             db.session.add(udmap)
@@ -138,7 +148,12 @@ def generateKey(username):
 def notify(deviceid):
     notification = Notification(deviceid)
     try:
-        db.session.add(notification)
+        try:
+            db.session.add(notification)
+        except Exception, e:
+            db.session.rollback()
+            print str(e)
+            return False
         db.session.commit()
         return notification
     except Exception, e:
@@ -163,7 +178,7 @@ def updatedeviceaction(id, action):
 
 
 def getallnotifiactions(email):
-    query = """select * from notification where deviceid in (select v.device_unique_key as device_unique_key from vehicle v INNER JOIN (select udm.deviceid from user_device_map udm INNER JOIN user ut ON ut.id = udm.userid where ut.email="%s") x ON x.deviceid=v.id)""" % email
+    query = """select * from public.notification where deviceid in (select v.device_unique_key as device_unique_key from public.vehicle v INNER JOIN (select udm.deviceid from public.user_device_map udm INNER JOIN public.user ut ON ut.id = udm.userid where ut.email='%s') x ON x.deviceid=v.id)""" % email
     result = db.engine.execute(query).fetchall()
     resp = []
     for x in result:
