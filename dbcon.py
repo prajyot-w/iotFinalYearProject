@@ -177,9 +177,18 @@ def updatedeviceaction(id, action):
         print str(e)
         return False
 
+def updateuseraction(id, action):
+    query = "update notification set useraction='%s' where id='%s'" % (action, id)
+    try:
+        db.engine.execute(query)
+        return True
+    except Exception, e:
+        print str(e)
+        return False
+
 
 def getallnotifiactions(email):
-    query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from public.user where email='%s'))""" % email
+    query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from public.user where email='%s')) order by timestamp desc""" % email
     result = db.engine.execute(query).fetchall()
     resp = []
     for x in result:

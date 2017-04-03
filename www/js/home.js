@@ -6,6 +6,7 @@ var app = angular.module('home',['ngCookies']);
 
 app.controller("MainCtrl", ["$scope", "$cookies", "$cookieStore", "MainService", function($scope, $cookies, $cookieStore, MainService){
     $scope.loggedIn = false;
+    $scope.notificationData = undefined;
 
     if($cookieStore.get("username") != undefined && $cookieStore.get("username") != ""
     && $cookies.get("key") != undefined && $cookies.get("key") != ""){
@@ -31,15 +32,33 @@ app.controller("MainCtrl", ["$scope", "$cookies", "$cookieStore", "MainService",
 
     $scope.logout = function(){
         window.location = '/logout';
-    }
+    };
+
+    $scope.getAllNotifications = function(){
+        MainService.getAllNotifications().then(function(resp){
+            if(resp.status == 200 && resp.data.status == "success"){
+                $scope.notificationData = resp.data.data;
+                console.log(resp.data.data);
+            }
+        });
+    };
+
+    $scope.getAllNotifications();
 }]);
 
 app.service("MainService",["$http", function($http){
 
+    this.getAllNotifications = function(){
+        return $http({
+            method: "GET",
+            url: "/getallnotifications"
+        });
+    }
+
     this.getvehicle = function(){
         return $http({
             method: "GET",
-            url: "/api/getvehicle"
+            url: "/getvehicle"
         });
     };
 

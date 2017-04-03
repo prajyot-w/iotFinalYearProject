@@ -58,13 +58,10 @@ body{background-color: #ffffff;}
     display: flex;
 }
 
-.content-body > *{
-    margin: auto auto;
-}
-
 .no-data-content{
     font-size: 1.7em;
     color: #aaaaaa;
+    margin: auto auto;
 }
 
 .no-data-content::after{
@@ -107,4 +104,25 @@ body{background-color: #ffffff;}
 
 .card-label-data{
     flex: 4;
+}
+
+/*Scrollable*/
+.scrollable-data{
+    max-height: 90vh;
+    overflow-y: scroll;
+}
+
+.scrollable-data::-webkit-scrollbar{
+    width: 0.7em;
+    height: 0.7em;
+}
+
+.scrollable-data::-webkit-scrollbar-track{
+    background-color: transparent;
+    border-radius: 1em;
+}
+
+.scrollable-data::-webkit-scrollbar-thumb{
+    border-radius: 1em;
+    background-color: #eee;
 }

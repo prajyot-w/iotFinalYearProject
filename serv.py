@@ -62,22 +62,8 @@ def getFiles(path):
 
 
 ## api services
-@app.route("/api/getvehicle", methods=['GET'])
-def getVehicle():
-    email = request.cookies.get("username")
-    key = request.cookies.get("key")
-    if checkCreds(email, key):
-        resp = dbcon.getVehicle(email)
-        if resp == {}:
-            resp["status"] = "failed"
-        else:
-            resp["status"] = "success"
-    else:
-        resp = {"status": "failed"}
-    resp = json.dumps(resp)
-    return resp
 
-@app.route("/api/notify", methods=["POST"])
+@app.route("/api/notify", methods=["POST"]) # raspi request
 def notify():
     resp = {}
     deviceid = request.form.get("deviceid")
@@ -90,7 +76,7 @@ def notify():
     resp = json.dumps(resp)
     return resp
 
-@app.route("/api/getnotificationbyid", methods=["POST"])
+@app.route("/api/getnotificationbyid", methods=["POST"]) # raspi request
 def getnotificationbyid():
     id = request.form.get("id")
     resp = {}
@@ -104,20 +90,155 @@ def getnotificationbyid():
     resp = json.dumps(resp)
     return resp
 
-@app.route("/api/updatedeviceaction", methods=["POST"])
+@app.route("/api/updatedeviceaction", methods=["POST"]) # raspi request
 def updatedeviceaction():
     ## ONLY ACCEPTS 'BLOCK' OR 'ALLOW'
     resp = {}
-    id =request.form.get("id")
+    notification_id = request.form.get("id")
     action = request.form.get("action")
-    if dbcon.updatedeviceaction(id, action):
+    if dbcon.updatedeviceaction(notification_id, action):
         resp["status"] = "success"
     else:
         resp["status"] = "failed"
     resp = json.dumps(resp)
     return resp
 
-@app.route("/api/getallnotifications", methods=["POST", "GET"])
+@app.route("/api/getvehicle", methods=['GET']) # mobile request
+def getVehicleAPI():
+    json_obj = request.get_json()
+    email = json_obj["username"]
+    key = json_obj["key"]
+    if checkCreds(email, key):
+        resp = dbcon.getVehicle(email)
+        if resp == {}:
+            resp["status"] = "failed"
+        else:
+            resp["status"] = "success"
+    else:
+        resp = {"status": "failed"}
+    resp = json.dumps(resp)
+    return resp
+
+@app.route("/api/getallnotifications", methods=["POST", "GET"]) # mobile request
+def getallnotificationsAPI():
+    json_obj = request.get_json()
+    email = json_obj["username"]
+    key = json_obj["key"]
+    resp = {}
+    if checkCreds(email, key):
+        respObj = dbcon.getallnotifiactions(email)
+        if respObj != False:
+            resp["status"] = "success"
+            resp["data"] = respObj
+        else:
+            resp["status"] = "failed"
+    else:
+        resp["status"] = "failed"
+    resp = json.dumps(resp)
+    return resp
+
+@app.route("/api/login", methods=['GET', 'POST']) # mobile request
+def checkLoginAPI():
+    if request.method == 'POST':
+        json_obj = request.get_json()
+        username = json_obj['username']
+        password = json_obj['password']
+        if dbcon.login(username, password):
+            username += ":api"
+            key = dbcon.generateKey(username)
+            resp = make_response(json.dumps({"status": "success", "username": username, "key": key}))
+            session[username] = key
+        else:
+            resp = make_response(json.dumps({"status": "failed"}))
+        return resp
+    else:
+        resp = make_response(json.dumps({"status": "failed"}))
+        return resp
+
+@app.route("/api/logout", methods=['GET']) # mobile request
+def logoutAPI():
+    json_obj = request.get_json()
+    username = json_obj['username']
+    session.pop(username, None)
+    resp = make_response(json.dumps({"status": "success"}))
+    return resp
+
+@app.route("/api/checkcreds", methods=['GET']) # mobile
+def chkCredsAPI():
+    resp = {"status": "unknown"}
+    json_obj = request.get_json()
+    username = json_obj["username"]
+    key = json_obj["key"]
+    if checkCreds(username, key):
+        resp["status"] = "success"
+    else:
+        resp["status"] = "failed"
+    resp = make_response(json.dumps(resp))
+    return resp
+
+@app.route("/api/reguser", methods=['POST']) # mobile
+def regUserAPI():
+    if request.method == 'POST':
+        json_obj = request.get_json()
+        username = json_obj["name"]
+        useremail = json_obj["email"]
+        password1 = json_obj["password1"]
+        password2 = json_obj["password2"]
+        try:
+            if dbcon.regUser(username, useremail, password1, password2):
+                resp = make_response(json.dumps({"status": "success", "email": useremail}))
+                return resp
+            else:
+                return make_response(json.dumps({"status": "failed"}))
+        except Exception, e:
+            print "EXCEPTION AT: serv.py > regUser() > if"
+            print str(e)
+            return make_response(json.dumps({"status": "failed"}))
+    else:
+        return make_response(json.dumps({"status": "failed"}))
+
+@app.route("/api/regvehicle", methods=['POST']) # mobile
+def regVehicleAPI():
+    if request.method == 'POST':
+        json_obj = request.get_json()
+        print json_obj
+        name = json_obj["name"]
+        description = json_obj["description"]
+        deviceid = json_obj['deviceid']
+        lastchecked = "N/A"
+        useremail = json_obj["email"]
+        try:
+            if dbcon.regVehicle(name, description, deviceid, lastchecked, useremail):
+                resp = make_response(json.dumps({"status": "success"}))
+                return resp
+            else:
+                return make_response(json.dumps({"status": "failed"}))
+        except Exception, e:
+            print "EXCEPTION :: " + str(e)
+        return make_response(json.dumps({"status": "failed"}))
+
+@app.route("/api/useraction", methods=['POST'])
+def useractionAPI():
+    if request.method == 'POST':
+        resp = {}
+        json_obj = request.get_json()
+        notification_id = json_obj["notificationId"]
+        useraction = json_obj["useraction"]
+        email = json_obj["username"]
+        key = json_obj["key"]
+        if checkCreds(email, key):
+            # make entry
+            if dbcon.updateuseraction(notification_id, useraction):
+                resp["status"] = "success"
+            else:
+                resp["status"] = "failed"
+        else:
+            resp["status"] = "failed"
+    resp = make_response(json.dumps(resp))
+    return resp
+
+## serve general web services
+@app.route("/getallnotifications", methods=["POST", "GET"])
 def getallnotifications():
     email = request.cookies.get("username")
     key = request.cookies.get("key")
@@ -134,7 +255,6 @@ def getallnotifications():
     resp = json.dumps(resp)
     return resp
 
-## serve general services
 @app.route("/reguser", methods=['POST'])
 def regUser():
     if request.method == 'POST':
@@ -151,6 +271,21 @@ def regUser():
             return FAILURE_MESSAGE
     else:
         return INVALID_REQUEST
+
+@app.route("/getvehicle", methods=['GET'])
+def getVehicle():
+    email = request.cookies.get("username")
+    key = request.cookies.get("key")
+    if checkCreds(email, key):
+        resp = dbcon.getVehicle(email)
+        if resp == {}:
+            resp["status"] = "failed"
+        else:
+            resp["status"] = "success"
+    else:
+        resp = {"status": "failed"}
+    resp = json.dumps(resp)
+    return resp
 
 @app.route("/regvehicle", methods=['POST'])
 def regVehicle():
@@ -212,7 +347,7 @@ def logout():
 
 @app.route("/checkcreds", methods=['GET'])
 def chkCreds():
-    resp = {"status" : "unknown"}
+    resp = {"status": "unknown"}
     if checkCreds(request.cookies.get("username"), request.cookies.get("key")):
         resp["status"] = "success"
     else:
