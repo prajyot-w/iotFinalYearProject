@@ -100,9 +100,9 @@ def regUser(name, email, password1, password2):
 
 def getVehicle(email):
     ## POSTGRES QUERY
-    # query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from public.user where email='%s'))" % email
+    query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from public.user where email='%s'))" % email
     ## SQLITE QUERY
-    query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from user where email='%s'))" % email
+    # query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from user where email='%s'))" % email
     try:
         result = db.engine.execute(query).fetchall()
     except Exception, e:
@@ -203,9 +203,9 @@ def updateuseraction(id, action):
 
 def getallnotifiactions(email):
     ## POSTGRES QUERY
-    # query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from public.user where email='%s')) order by timestamp desc""" % email
+    query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from public.user where email='%s')) order by timestamp desc""" % email
     ## SQLITE QUERY
-    query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from user where email='%s')) order by timestamp desc""" % email
+    # query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from user where email='%s')) order by timestamp desc""" % email
     result = db.engine.execute(query).fetchall()
     resp = []
     for x in result:

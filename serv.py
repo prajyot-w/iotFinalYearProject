@@ -9,8 +9,8 @@ import json
 
 app = Flask(__name__)
 CORS(app)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cifhxzeverqgqq:d4f3d95a2ff0f1edd730ea8c5d34895cb2e81b2248c89298f938824249cb435b@ec2-107-20-141-145.compute-1.amazonaws.com:5432/d6lrmj3d48nngg'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cifhxzeverqgqq:d4f3d95a2ff0f1edd730ea8c5d34895cb2e81b2248c89298f938824249cb435b@ec2-107-20-141-145.compute-1.amazonaws.com:5432/d6lrmj3d48nngg'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = "prajyot"
 
