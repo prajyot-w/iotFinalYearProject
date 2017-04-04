@@ -13,20 +13,27 @@ SERVER_URL = "http://carsecure.herokuapp.com/"
 # GPIO.setmode(GPIO.BOARD)
 # GPIO.setup(PIN_NO, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-def block_car(id):
+def block_car(notification_id):
     # send block status
-    print "BLOCKING"
-    pass
+    print "DENYING ACCESS"
+    resp = requests.post(SERVER_URL+"api/updatedeviceaction", data={"id": notification_id, "action": "BLOCK"})
+    # GPIO BLOCKING CODE
+    print resp.json()
+    return
 
-def allow_car(id):
+def allow_car(notification_id):
     # send allow status
-    print "ALLOWING"
-    pass
+    print "ALLOWING ACCESS"
+    resp = requests.post(SERVER_URL + "api/updatedeviceaction", data={"id": notification_id, "action": "ALLOW"})
+    # GPIO ALLOWING CODE
+    print resp.json()
+    return
 
 def waitNact(id):
     # wait n act accordingly
     print "WATCHING"
     for x in range(5):
+        sleep(5)
         resp = requests.post(SERVER_URL+"api/getnotificationbyid", data={"id": id})
         if resp.status_code == 200:
             resp = resp.json()
@@ -51,17 +58,16 @@ def sendAlert():
         print "Blocking car"
 
 if __name__ == "__main__":
-    sendAlert()
-else:
-    while True:
-        try:
-            GPIO.wait_for_edge(PIN_NO,GPIO.RISING)
-            print("Intrusion Detected")
-            sendAlert()
-            sleep(5)
-        except (KeyboardInterrupt, SystemExit, Exception):
-            GPIO.cleanup()
-            exit()
+    sendAlert() # for testing
+    # while True:
+    #     try:
+    #         GPIO.wait_for_edge(PIN_NO,GPIO.RISING)
+    #         print("Intrusion Detected")
+    #         sendAlert()
+    #         sleep(5)
+    #     except (KeyboardInterrupt, SystemExit, Exception):
+    #         GPIO.cleanup()
+    #         exit()
 
 
 # GPIO.cleanup()
