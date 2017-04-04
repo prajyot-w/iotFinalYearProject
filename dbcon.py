@@ -75,38 +75,44 @@ def regUser(name, email, password1, password2):
     and check if invalid characters are present
     in all fields
     """
-    user = None
-    if (name.find("'") < 0 and name.find('"') < 0 and email.find("'") < 0 and email.find('"') < 0 and password1.find(
-        "'") < 0 and password1.find('"') < 0 and password2.find("'") < 0 and password2.find('"') < 0):
-        if(password1 == password2 and password1 != None and password1 != ""):
-            password = hashlib.sha224(password1).hexdigest()
-            user = User(name, email, password)
-            try:
-                db.session.add(user)
-            except Exception, e:
-                db.session.rollback()
-                print(str(e))
+    usrChk = User.query.filter_by(email=email).all()
+    if len(usrChk) == 0:
+        if (name.find("'") < 0 and name.find('"') < 0 and email.find("'") < 0 and email.find('"') < 0 and password1.find(
+            "'") < 0 and password1.find('"') < 0 and password2.find("'") < 0 and password2.find('"') < 0):
+            if(password1 == password2 and password1 != None and password1 != ""):
+                password = hashlib.sha224(password1).hexdigest()
+                user = User(name, email, password)
+                try:
+                    db.session.add(user)
+                except Exception, e:
+                    db.session.rollback()
+                    print(str(e))
+                    return False
+                db.session.commit()
+                return True
+            else:
                 return False
-            db.session.commit()
-            return True
         else:
             return False
     else:
+        print "Email already exists in database."
         return False
 
 def getVehicle(email):
+    ## POSTGRES QUERY
     # query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from public.user where email='%s'))" % email
-    # try:
-    #     result = db.engine.execute(query).fetchall()
-    # except Exception, e:
-    #     print str(e)
-    #     db.session.rollback()
-    # resObj = {}
-    # if len(result) == 1:
-    #     resObj["name"] = result[0][1]
-    #     resObj["description"] = result[0][2]
-    # return resObj
-    return ""
+    ## SQLITE QUERY
+    query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from user where email='%s'))" % email
+    try:
+        result = db.engine.execute(query).fetchall()
+    except Exception, e:
+        print str(e)
+        db.session.rollback()
+    resObj = {}
+    if len(result) == 1:
+        resObj["name"] = result[0][1]
+        resObj["description"] = result[0][2]
+    return resObj
 
 def regVehicle(name, description, device_unique_key, last_checked, user_name):
     """
@@ -196,16 +202,18 @@ def updateuseraction(id, action):
 
 
 def getallnotifiactions(email):
+    ## POSTGRES QUERY
     # query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from public.user where email='%s')) order by timestamp desc""" % email
-    # result = db.engine.execute(query).fetchall()
-    # resp = []
-    # for x in result:
-    #     resp.append({"id": x[0], "deviceid": x[1], "timestamp": x[2], "useraction": x[3], "status": x[4]})
-    # if len(resp) > 0:
-    #     return resp
-    # else:
-    #     return False
-    return ""
+    ## SQLITE QUERY
+    query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from user where email='%s')) order by timestamp desc""" % email
+    result = db.engine.execute(query).fetchall()
+    resp = []
+    for x in result:
+        resp.append({"id": x[0], "deviceid": x[1], "timestamp": x[2], "useraction": x[3], "status": x[4]})
+    if len(resp) > 0:
+        return resp
+    else:
+        return False
 
 ## table management
 def createAll():

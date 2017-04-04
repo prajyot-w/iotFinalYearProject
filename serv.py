@@ -110,11 +110,15 @@ def getVehicleAPI():
     email = json_obj["username"]
     key = json_obj["key"]
     if checkCreds(email, key):
-        resp = dbcon.getVehicle(email)
-        if resp == {}:
-            resp["status"] = "failed"
-        else:
-            resp["status"] = "success"
+        try:
+            resp = dbcon.getVehicle(email)
+            if resp == {}:
+                resp["status"] = "failed"
+            else:
+                resp["status"] = "success"
+        except Exception, e:
+            print str(e)
+            resp = {"status": "failed"}
     else:
         resp = {"status": "failed"}
     resp = json.dumps(resp)
@@ -150,9 +154,11 @@ def checkLoginAPI():
             resp = make_response(json.dumps({"status": "success", "username": username, "key": key}))
             session[username] = key
         else:
+            print "Wrong Credentials"
             resp = make_response(json.dumps({"status": "failed"}))
         return resp
     else:
+        print "GET method called"
         resp = make_response(json.dumps({"status": "failed"}))
         return resp
 
@@ -278,11 +284,15 @@ def getVehicle():
     email = request.cookies.get("username")
     key = request.cookies.get("key")
     if checkCreds(email, key):
-        resp = dbcon.getVehicle(email)
-        if resp == {}:
-            resp["status"] = "failed"
-        else:
-            resp["status"] = "success"
+        try:
+            resp = dbcon.getVehicle(email)
+            if resp == {}:
+                resp["status"] = "failed"
+            else:
+                resp["status"] = "success"
+        except Exception, e:
+            print str(e)
+            resp = {"status": "failed"}
     else:
         resp = {"status": "failed"}
     resp = json.dumps(resp)
@@ -369,6 +379,7 @@ def checkLogin():
             session[username] = key
             return resp
         else:
+            print "Wrong Credentials"
             return FAILURE_MESSAGE
     else:
         try:
@@ -377,6 +388,7 @@ def checkLogin():
             if checkCreds(username, key):
                 return "<script>window.location='home.html'</script>"
         except Exception:
+            print "Session not available"
             return FAILURE_MESSAGE
         return INVALID_REQUEST
 
