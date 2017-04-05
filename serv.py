@@ -84,10 +84,7 @@ def notify():
     else:
         resp["status"] = "failed"
     resp = json.dumps(resp)
-    if resp["status"] == "success":
-        return resp
-    else:
-        return resp, 404
+    return resp
 
 @app.route("/api/getnotificationbyid", methods=["POST"]) # raspi request
 def getnotificationbyid():
