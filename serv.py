@@ -84,7 +84,10 @@ def notify():
     else:
         resp["status"] = "failed"
     resp = json.dumps(resp)
-    return resp
+    if resp["status"] == "success":
+        return resp
+    else:
+        return resp, 404
 
 @app.route("/api/getnotificationbyid", methods=["POST"]) # raspi request
 def getnotificationbyid():
@@ -160,7 +163,7 @@ def checkLoginAPI():
         password = json_obj['password']
         if dbcon.login(username, password):
             key = dbcon.generateKey(username)
-            displayname = dbcon.User.query.filter_by(email=username).first().username;
+            displayname = dbcon.User.query.filter_by(email=username).first().username
             resp = make_response(json.dumps({"status": "success", "username": username, "key": key, "displayname": displayname}))
             API_SESSION[username] = key
         else:
@@ -172,13 +175,22 @@ def checkLoginAPI():
         resp = make_response(json.dumps({"status": "failed"}))
         return resp
 
-@app.route("/api/logout", methods=['GET']) # mobile request
+@app.route("/api/logout", methods=['POST']) # mobile request
 def logoutAPI():
     global API_SESSION
     json_obj = request.get_json()
-    username = json_obj['username']
-    API_SESSION.pop(username)
-    resp = make_response(json.dumps({"status": "success"}))
+    if json_obj == None:
+        resp = {"status": "failed", "message": "No value received"}
+    else:
+        username = json_obj['username']
+        try:
+            API_SESSION.pop(username)
+            resp = {"status": "success"}
+        except Exception, e:
+            print str(e)
+            resp = {"status": "failed", "message": "Error occured while destroying session."}
+    print resp
+    resp = make_response(json.dumps(resp))
     return resp
 
 @app.route("/api/checkcreds", methods=['GET']) # mobile
