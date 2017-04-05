@@ -51,23 +51,28 @@
             </div>
         </div>
         <!--Content Body-->
-        <div class="row content-body">
-            <div class="no-data-content" ng-if="notificationData==undefined">
-                <span class="glyphicon glyphicon-floppy-remove"></span>
-            </div>
-            <div class="col-sm-12 col-md-12 col-xs-12" ng-if="notificationData!=undefined">
-                <div class="card">
-                    <div class="card-body scrollable-data">
-                        <div class="card" data-ng-repeat="notification in notificationData">
-                            <div class="card-header">{{notification.timestamp}}</div>
-                            <div class="card-body">
-                                <div class="card-list">
-                                    <div class="card-label">Status</div>
-                                    <div class="card-label-data">{{notification.status}}</div>
-                                </div>
-                                <div class="card-list">
-                                    <div class="card-label">User Action</div>
-                                    <div class="card-label-data">{{notification.useraction}}</div>
+        <div class="row">
+            <div class="content-body">
+                <div class="no-data-content" ng-if="notificationData==undefined">
+                    <span class="glyphicon glyphicon-floppy-remove"></span>
+                </div>
+                <div class="col-sm-12 col-md-12 col-xs-12" ng-if="notificationData!=undefined">
+                    <div class="card">
+                        <div class="card-body scrollable-data">
+                            <div class="card" data-ng-repeat="notification in notificationData">
+                                <div class="card-header">{{notification.timestamp}}</div>
+                                <div class="card-body">
+                                    <div class="card-list">
+                                        <div class="card-label">Status</div>
+                                        <div class="card-label-data">{{notification.status}}</div>
+                                    </div>
+                                    <div class="card-list">
+                                        <div class="card-label">User Action</div>
+                                        <div class="card-label-data">{{notification.useraction}}</div>
+                                    </div>
+                                    <!--<div class="card-list form-group">
+                                        <button class="btn btn-primary form-control" ng-click="getID('ALLOW', {{notification.id}})">Submit</button>
+                                    </div>-->
                                 </div>
                             </div>
                         </div>
@@ -76,6 +81,8 @@
             </div>
         </div>
         <!--Footer-->
+    </div>
+    <div class="container">
         <div class="row">
             <div class="creators">Created by Prajyot Walali, Prabhat Singh and Ranvijay Prajapati</div>
         </div>

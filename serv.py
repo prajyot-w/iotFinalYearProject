@@ -48,8 +48,6 @@ FAILURE_MESSAGE = """
 """
 def checkCredsAPI(username, key):
     global API_SESSION
-    print "API SESSION :: ================================================"
-    print API_SESSION
     if username != None and username != "" and key != None and key != "" and API_SESSION[username] == key:
         return True
     else:
