@@ -14,6 +14,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cifhxzeverqgqq:d4f3d95a2ff0f
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = "prajyot"
 
+API_SESSION = {}
+
 INVALID_REQUEST = """
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <style>
@@ -44,7 +46,14 @@ FAILURE_MESSAGE = """
     setTimeout(function(){window.location="/";},2000);
     </script>
 """
-
+def checkCredsAPI(username, key):
+    global API_SESSION
+    print "API SESSION :: ================================================"
+    print API_SESSION
+    if username != None and username != "" and key != None and key != "" and API_SESSION[username] == key:
+        return True
+    else:
+        return False
 
 def checkCreds(username, key):
     if username != None and username != "" and key != None and key != "" and session[username] == key:
@@ -104,12 +113,12 @@ def updatedeviceaction():
     resp = json.dumps(resp)
     return resp
 
-@app.route("/api/getvehicle", methods=['GET']) # mobile request
+@app.route("/api/getvehicle", methods=['POST']) # mobile request
 def getVehicleAPI():
     json_obj = request.get_json()
     email = json_obj["username"]
     key = json_obj["key"]
-    if checkCreds(email, key):
+    if checkCredsAPI(email, key):
         try:
             resp = dbcon.getVehicle(email)
             if resp == {}:
@@ -130,7 +139,7 @@ def getallnotificationsAPI():
     email = json_obj["username"]
     key = json_obj["key"]
     resp = {}
-    if checkCreds(email, key):
+    if checkCredsAPI(email, key):
         respObj = dbcon.getallnotifiactions(email)
         if respObj != False:
             resp["status"] = "success"
@@ -144,15 +153,16 @@ def getallnotificationsAPI():
 
 @app.route("/api/login", methods=['GET', 'POST']) # mobile request
 def checkLoginAPI():
+    global API_SESSION
     if request.method == 'POST':
         json_obj = request.get_json()
         username = json_obj['username']
         password = json_obj['password']
         if dbcon.login(username, password):
-            username += ":api"
             key = dbcon.generateKey(username)
-            resp = make_response(json.dumps({"status": "success", "username": username, "key": key}))
-            session[username] = key
+            displayname = dbcon.User.query.filter_by(email=username).first().username;
+            resp = make_response(json.dumps({"status": "success", "username": username, "key": key, "displayname": displayname}))
+            API_SESSION[username] = key
         else:
             print "Wrong Credentials"
             resp = make_response(json.dumps({"status": "failed"}))
@@ -164,9 +174,10 @@ def checkLoginAPI():
 
 @app.route("/api/logout", methods=['GET']) # mobile request
 def logoutAPI():
+    global API_SESSION
     json_obj = request.get_json()
     username = json_obj['username']
-    session.pop(username, None)
+    API_SESSION.pop(username)
     resp = make_response(json.dumps({"status": "success"}))
     return resp
 
@@ -176,7 +187,7 @@ def chkCredsAPI():
     json_obj = request.get_json()
     username = json_obj["username"]
     key = json_obj["key"]
-    if checkCreds(username, key):
+    if checkCredsAPI(username, key):
         resp["status"] = "success"
     else:
         resp["status"] = "failed"
@@ -208,7 +219,6 @@ def regUserAPI():
 def regVehicleAPI():
     if request.method == 'POST':
         json_obj = request.get_json()
-        print json_obj
         name = json_obj["name"]
         description = json_obj["description"]
         deviceid = json_obj['deviceid']
@@ -224,7 +234,7 @@ def regVehicleAPI():
             print "EXCEPTION :: " + str(e)
         return make_response(json.dumps({"status": "failed"}))
 
-@app.route("/api/useraction", methods=['POST'])
+@app.route("/api/useraction", methods=['POST']) # mobile
 def useractionAPI():
     if request.method == 'POST':
         resp = {}
@@ -233,7 +243,7 @@ def useractionAPI():
         useraction = json_obj["useraction"]
         email = json_obj["username"]
         key = json_obj["key"]
-        if checkCreds(email, key):
+        if checkCredsAPI(email, key):
             # make entry
             if dbcon.updateuseraction(notification_id, useraction):
                 resp["status"] = "success"
@@ -399,4 +409,4 @@ if __name__ == "__main__":
     app.app_context().push()
     PORTNO = int(os.environ.get("PORT", 2121))
     print "Initiating server on port " + str(PORTNO)
-    app.run(host='0.0.0.0', port=PORTNO)  # remove debug before deploying
+    app.run(host='0.0.0.0', port=PORTNO, debug=True)  # remove debug before deploying
