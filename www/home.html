@@ -16,77 +16,78 @@
     <title>Home Page</title>
 </head>
 <body ng-controller="MainCtrl">
-<div ng-if="loggedIn">
-    <div class="container-fluid">
-        <div class="row header-row">
-            <div class="col-sm-12 col-md-12 col-xs-12">
-                <div class="flex-wrap header-wrap">
-                    <div class=""><span class="glyphicon glyphicon-menu-hamburger"></span></div>
-                    <div class="">CarSecure</div>
-                    <div class="" ng-click="logout()">
-                        <span class="glyphicon glyphicon-log-out" alt="logout"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="row" ng-if="vehicleInfo['status'] == 'success'">
-            <div class="col-sm-12 col-md-12 col-xs-12">
-                <div class="card">
-                    <div class="card-header">
-                        Vehicle Info
-                    </div>
-                    <div class="card-body">
-                        <div class="card-list">
-                            <div class="card-label">Name</div>
-                            <div class="card-label-data">{{vehicleInfo['name']}}</div>
-                        </div>
-                        <div class="card-list">
-                            <div class="card-label">Description</div>
-                            <div class="card-label-data">{{vehicleInfo['description']}}</div>
+    <div class="background-img-blur"></div>
+    <div ng-if="loggedIn">
+        <div class="container-fluid">
+            <div class="row header-row">
+                <div class="col-sm-12 col-md-12 col-xs-12">
+                    <div class="flex-wrap header-wrap">
+                        <div class=""><span class="glyphicon glyphicon-menu-hamburger"></span></div>
+                        <div class="">CarSecure</div>
+                        <div class="" ng-click="logout()">
+                            <span class="glyphicon glyphicon-log-out" alt="logout"></span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!--Content Body-->
-        <div class="row">
-            <div class="content-body">
-                <div class="no-data-content" ng-if="notificationData==undefined">
-                    <span class="glyphicon glyphicon-floppy-remove"></span>
-                </div>
-                <div class="col-sm-12 col-md-12 col-xs-12" ng-if="notificationData!=undefined">
+        <div class="container">
+            <div class="row" ng-if="vehicleInfo['status'] == 'success'">
+                <div class="col-sm-12 col-md-12 col-xs-12">
                     <div class="card">
-                        <div class="card-body scrollable-data">
-                            <div class="card" data-ng-repeat="notification in notificationData">
-                                <div class="card-header">{{notification.timestamp}}</div>
-                                <div class="card-body">
-                                    <div class="card-list">
-                                        <div class="card-label">Status</div>
-                                        <div class="card-label-data">{{notification.status}}</div>
+                        <div class="card-header">
+                            Vehicle Info
+                        </div>
+                        <div class="card-body">
+                            <div class="card-list">
+                                <div class="card-label">Name</div>
+                                <div class="card-label-data">{{vehicleInfo['name']}}</div>
+                            </div>
+                            <div class="card-list">
+                                <div class="card-label">Description</div>
+                                <div class="card-label-data">{{vehicleInfo['description']}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Content Body-->
+            <div class="row">
+                <div class="content-body">
+                    <div class="no-data-content" ng-if="notificationData==undefined">
+                        <span class="glyphicon glyphicon-floppy-remove"></span>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-xs-12" ng-if="notificationData!=undefined">
+                        <div class="card">
+                            <div class="card-body scrollable-data">
+                                <div class="card" data-ng-repeat="notification in notificationData">
+                                    <div class="card-header">{{notification.timestamp}}</div>
+                                    <div class="card-body">
+                                        <div class="card-list">
+                                            <div class="card-label">Status</div>
+                                            <div class="card-label-data">{{notification.status}}</div>
+                                        </div>
+                                        <div class="card-list">
+                                            <div class="card-label">User Action</div>
+                                            <div class="card-label-data">{{notification.useraction}}</div>
+                                        </div>
+                                        <!--<div class="card-list form-group">
+                                            <button class="btn btn-primary form-control" ng-click="getID('ALLOW', {{notification.id}})">Submit</button>
+                                        </div>-->
                                     </div>
-                                    <div class="card-list">
-                                        <div class="card-label">User Action</div>
-                                        <div class="card-label-data">{{notification.useraction}}</div>
-                                    </div>
-                                    <!--<div class="card-list form-group">
-                                        <button class="btn btn-primary form-control" ng-click="getID('ALLOW', {{notification.id}})">Submit</button>
-                                    </div>-->
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!--Footer-->
         </div>
-        <!--Footer-->
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="creators">Created by Prajyot Walali, Prabhat Singh and Ranvijay Prajapati</div>
+        <div class="container">
+            <div class="row">
+                <div class="creators">Created by Prajyot Walali, Prabhat Singh and Ranvijay Prajapati</div>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>

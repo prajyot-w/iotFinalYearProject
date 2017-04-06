@@ -2,6 +2,25 @@
 
 .test{border: 1px solid red;}
 
+/*ANIMATION KEYFRAMES*/
+@keyframes fadeIn-riseup {
+    0% {opacity: 0; margin-top: 20px;}
+    100% {opacity: 1; margin-top: 0px;}
+}
+
+@keyframes fadeIn {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+.container-fluid > * {
+    animation: fadeIn 1s ease-in-out;
+}
+
+.container > *{
+    animation: fadeIn-riseup 2s ease-in-out;
+}
+
 .creators{
     margin: 1em auto;
     /*border: 1px solid red;*/
@@ -9,12 +28,13 @@
     color: #cccccc;
 }
 
-body{background-color: #ffffff;}
+body{background-color: rgb(246, 251, 255);}
 
 .header-row{
     /*background-color: #eeeeee;*/
     border-bottom: 2px solid #dddddd;
-    color: dimgray;
+    color: white;
+    background-color: steelblue;
 }
 
 .flex-wrap{
@@ -74,6 +94,7 @@ body{background-color: #ffffff;}
     border: 1px solid #ddd;
     border-radius: 0.5em;
     overflow: hidden;
+    background-color: white;
 }
 
 .card-header, .card-body{
@@ -119,3 +140,5 @@ body{background-color: #ffffff;}
     border-radius: 1em;
     background-color: #eee;
 }
+
+
