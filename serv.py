@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-## Final server file
+# Final server file
 
 import os
 from flask import Flask, send_from_directory, request, session, make_response
@@ -46,6 +46,8 @@ FAILURE_MESSAGE = """
     setTimeout(function(){window.location="/";},2000);
     </script>
 """
+
+
 def checkCredsAPI(username, key):
     global API_SESSION
     if username != None and username != "" and key != None and key != "" and API_SESSION[username] == key:
@@ -53,12 +55,14 @@ def checkCredsAPI(username, key):
     else:
         return False
 
+
 def checkCreds(username, key):
     if username != None and username != "" and key != None and key != "" and session[username] == key:
         return True
     return False
 
-## serve website
+
+# serve website
 @app.route("/")
 def getIndex():
     return send_from_directory("www", "index.html")
@@ -69,7 +73,8 @@ def getFiles(path):
     return send_from_directory("www", path)
 
 
-## api services
+# api services
+
 
 @app.route("/api/notify", methods=["POST"]) # raspi request
 def notify():
@@ -83,6 +88,7 @@ def notify():
         resp["status"] = "failed"
     resp = json.dumps(resp)
     return resp
+
 
 @app.route("/api/getnotificationbyid", methods=["POST"]) # raspi request
 def getnotificationbyid():
@@ -98,9 +104,10 @@ def getnotificationbyid():
     resp = json.dumps(resp)
     return resp
 
+
 @app.route("/api/updatedeviceaction", methods=["POST"]) # raspi request
 def updatedeviceaction():
-    ## ONLY ACCEPTS 'BLOCK' OR 'ALLOW'
+    # ONLY ACCEPTS 'BLOCK' OR 'ALLOW'
     resp = {}
     notification_id = request.form.get("id")
     action = request.form.get("action")
@@ -110,6 +117,7 @@ def updatedeviceaction():
         resp["status"] = "failed"
     resp = json.dumps(resp)
     return resp
+
 
 @app.route("/api/getvehicle", methods=['POST']) # mobile request
 def getVehicleAPI():
@@ -131,6 +139,7 @@ def getVehicleAPI():
     resp = json.dumps(resp)
     return resp
 
+
 @app.route("/api/getallnotifications", methods=["POST", "GET"]) # mobile request
 def getallnotificationsAPI():
     json_obj = request.get_json()
@@ -148,6 +157,7 @@ def getallnotificationsAPI():
         resp["status"] = "failed"
     resp = json.dumps(resp)
     return resp
+
 
 @app.route("/api/login", methods=['GET', 'POST']) # mobile request
 def checkLoginAPI():
@@ -170,6 +180,7 @@ def checkLoginAPI():
         resp = make_response(json.dumps({"status": "failed"}))
         return resp
 
+
 @app.route("/api/logout", methods=['POST']) # mobile request
 def logoutAPI():
     global API_SESSION
@@ -188,6 +199,7 @@ def logoutAPI():
     resp = make_response(json.dumps(resp))
     return resp
 
+
 @app.route("/api/checkcreds", methods=['GET']) # mobile
 def chkCredsAPI():
     resp = {"status": "unknown"}
@@ -200,6 +212,7 @@ def chkCredsAPI():
         resp["status"] = "failed"
     resp = make_response(json.dumps(resp))
     return resp
+
 
 @app.route("/api/reguser", methods=['POST']) # mobile
 def regUserAPI():
@@ -222,6 +235,7 @@ def regUserAPI():
     else:
         return make_response(json.dumps({"status": "failed"}))
 
+
 @app.route("/api/regvehicle", methods=['POST']) # mobile
 def regVehicleAPI():
     if request.method == 'POST':
@@ -241,8 +255,10 @@ def regVehicleAPI():
             print "EXCEPTION :: " + str(e)
         return make_response(json.dumps({"status": "failed"}))
 
+
 @app.route("/api/useraction", methods=['POST']) # mobile
 def useractionAPI():
+    resp = {}
     if request.method == 'POST':
         resp = {}
         json_obj = request.get_json()
@@ -261,7 +277,8 @@ def useractionAPI():
     resp = make_response(json.dumps(resp))
     return resp
 
-## serve general web services
+
+# serve general web services
 @app.route("/getallnotifications", methods=["POST", "GET"])
 def getallnotifications():
     email = request.cookies.get("username")
@@ -279,6 +296,7 @@ def getallnotifications():
     resp = json.dumps(resp)
     return resp
 
+
 @app.route("/reguser", methods=['POST'])
 def regUser():
     if request.method == 'POST':
@@ -295,6 +313,7 @@ def regUser():
             return FAILURE_MESSAGE
     else:
         return INVALID_REQUEST
+
 
 @app.route("/getvehicle", methods=['GET'])
 def getVehicle():
@@ -314,6 +333,7 @@ def getVehicle():
         resp = {"status": "failed"}
     resp = json.dumps(resp)
     return resp
+
 
 @app.route("/regvehicle", methods=['POST'])
 def regVehicle():
@@ -349,6 +369,7 @@ def regVehicle():
             print "EXCEPTION :: " + str(e)
             return FAILURE_MESSAGE
 
+
 @app.route("/logout", methods=['GET'])
 def logout():
     LOG_OUT_MESSAGE = """
@@ -373,6 +394,7 @@ def logout():
     resp.set_cookie("key", "", expires=0)
     return resp
 
+
 @app.route("/checkcreds", methods=['GET'])
 def chkCreds():
     resp = {"status": "unknown"}
@@ -382,6 +404,7 @@ def chkCreds():
         resp["status"] = "failed"
     resp = make_response(json.dumps(resp))
     return resp
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def checkLogin():
@@ -410,7 +433,7 @@ def checkLogin():
         return INVALID_REQUEST
 
 
-## MAIN METHOD
+# MAIN METHOD
 if __name__ == "__main__":
     app = dbcon.inject_db(app)
     app.app_context().push()
