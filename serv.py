@@ -200,7 +200,7 @@ def logoutAPI():
     return resp
 
 
-@app.route("/api/checkcreds", methods=['GET']) # mobile
+@app.route("/api/checkcreds", methods=['POST']) # mobile
 def chkCredsAPI():
     resp = {"status": "unknown"}
     json_obj = request.get_json()
