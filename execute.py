@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import requests
 from time import sleep
 
@@ -10,13 +10,17 @@ DEVICE_ID = "MER123"
 SERVER_URL = "http://carsecure.herokuapp.com/"
 
 # GPIO setup ...................................
-# GPIO.setmode(GPIO.BOARD)
-# GPIO.setup(PIN_NO, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(PIN_NO, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 def block_car(notification_id):
     # send block status
     print "DENYING ACCESS"
-    resp = requests.post(SERVER_URL+"api/updatedeviceaction", data={"id": notification_id, "action": "BLOCK"})
+    if notification_id > 0:
+        try:
+            resp = requests.post(SERVER_URL+"api/updatedeviceaction", data={"id": notification_id, "action": "BLOCK"})
+        except Exception:
+            print "Error occured while sending 'BLOCK' device action"
     # GPIO BLOCKING CODE
     print resp.json()
     return
@@ -24,7 +28,12 @@ def block_car(notification_id):
 def allow_car(notification_id):
     # send allow status
     print "ALLOWING ACCESS"
-    resp = requests.post(SERVER_URL + "api/updatedeviceaction", data={"id": notification_id, "action": "ALLOW"})
+    try:
+        resp = requests.post(SERVER_URL + "api/updatedeviceaction", data={"id": notification_id, "action": "ALLOW"})
+    except Exception:
+        print "Error occured while sending 'ALLOW' device action"
+        block_car(-1)
+        return
     # GPIO ALLOWING CODE
     print resp.json()
     return
@@ -54,20 +63,19 @@ def sendAlert():
         id = resp["id"]
         waitNact(id)
     else:
-        ## Block the car
+        block_car(-1)
         print "Blocking car"
 
 if __name__ == "__main__":
-    sendAlert() # for testing
-    # while True:
-    #     try:
-    #         GPIO.wait_for_edge(PIN_NO,GPIO.RISING)
-    #         print("Intrusion Detected")
-    #         sendAlert()
-    #         sleep(5)
-    #     except (KeyboardInterrupt, SystemExit, Exception):
-    #         GPIO.cleanup()
-    #         exit()
+    while True:
+        try:
+            GPIO.wait_for_edge(PIN_NO,GPIO.RISING)
+            print("Intrusion Detected")
+            sendAlert()
+            sleep(5)
+        except (KeyboardInterrupt, SystemExit, Exception):
+            GPIO.cleanup()
+            exit()
 
 
-# GPIO.cleanup()
+GPIO.cleanup()
