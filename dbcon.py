@@ -7,19 +7,21 @@ db = SQLAlchemy()
 SECRET_KEY = "Prajyot Prabhat Ranvijay"
 
 ## DB TABLES
-class User(db.Model):
+class AppUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=False)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(120))
+    pushtoken = db.Column(db.String(700))
 
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
         self.password = password
+        self.pushToken = ""
 
     def __repr__(self):
-        return '<User %r with email %r>' % (self.username, self.email)
+        return '<AppUser %r with email %r>' % (self.username, self.email)
 
 
 class Vehicle(db.Model):
@@ -27,7 +29,7 @@ class Vehicle(db.Model):
     name = db.Column(db.String(50))
     description = db.Column(db.String(300))
     device_unique_key = db.Column(db.String(100))
-    last_checked = db.Column(db.String(50)) # timestamp
+    last_checked = db.Column(db.String(50))  # timestamp
 
     def __init__(self, name, description, device_unique_key, last_checked):
         self.name = name
@@ -59,7 +61,7 @@ class Notification(db.Model):
 
 class UserDeviceMap(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    userid = db.Column(db.Integer, db.ForeignKey('user.id'))
+    userid = db.Column(db.Integer, db.ForeignKey('app_user.id'))
     deviceid = db.Column(db.Integer, db.ForeignKey('vehicle.id'))
 
     def __init__(self, userid, deviceid):
@@ -75,13 +77,13 @@ def regUser(name, email, password1, password2):
     and check if invalid characters are present
     in all fields
     """
-    usrChk = User.query.filter_by(email=email).all()
+    usrChk = AppUser.query.filter_by(email=email).all()
     if len(usrChk) == 0:
         if (name.find("'") < 0 and name.find('"') < 0 and email.find("'") < 0 and email.find('"') < 0 and password1.find(
             "'") < 0 and password1.find('"') < 0 and password2.find("'") < 0 and password2.find('"') < 0):
             if(password1 == password2 and password1 != None and password1 != ""):
                 password = hashlib.sha224(password1).hexdigest()
-                user = User(name, email, password)
+                user = AppUser(name, email, password)
                 try:
                     db.session.add(user)
                 except Exception, e:
@@ -100,7 +102,7 @@ def regUser(name, email, password1, password2):
 
 def getVehicle(email):
     ## POSTGRES QUERY
-    query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from public.user where email='%s'))" % email
+    query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from app_user where email='%s'))" % email
     ## SQLITE QUERY
     # query = "select * from vehicle where id in (select deviceid from user_device_map where userid in (select id from user where email='%s'))" % email
     try:
@@ -120,7 +122,7 @@ def regVehicle(name, description, device_unique_key, last_checked, user_name):
     """
     query = "select * from vehicle where device_unique_key='%s' " % device_unique_key
     vehicle = Vehicle(name, description, device_unique_key, last_checked)
-    user = User.query.filter_by(email=user_name).all()
+    user = AppUser.query.filter_by(email=user_name).all()
     if(len(db.engine.execute(query).fetchall())<=0 and len(user) == 1):
         # register vehicle and map user in following user table
         try:
@@ -145,7 +147,7 @@ def regVehicle(name, description, device_unique_key, last_checked, user_name):
 
 def login(uname, paswd):
     paswd = hashlib.sha224(paswd).hexdigest()
-    result = User.query.filter_by(email=uname, password=paswd).first()
+    result = AppUser.query.filter_by(email=uname, password=paswd).first()
     if result == None:
         return False
     else:
@@ -171,6 +173,11 @@ def notify(deviceid):
     except Exception, e:
         print str(e)
         return False
+
+def getToken(deviceid):
+    query = "select pushtoken from app_user where id in (select userid from user_device_map where deviceid in  (select id from vehicle where device_unique_key = '%s'));" % deviceid
+    token = db.engine.execute(query).first()[0]
+    return token
 
 def getnotificationbyid(id):
     print type(id)
@@ -203,7 +210,7 @@ def updateuseraction(id, action):
 
 def getallnotifiactions(email):
     ## POSTGRES QUERY
-    query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from public.user where email='%s')) order by timestamp desc""" % email
+    query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from app_user where email='%s')) order by timestamp desc""" % email
     ## SQLITE QUERY
     # query = """select * from notification where deviceid in (select deviceid from user_device_map where userid in (select id from user where email='%s')) order by timestamp desc""" % email
     result = db.engine.execute(query).fetchall()

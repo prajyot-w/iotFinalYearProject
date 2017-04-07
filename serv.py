@@ -76,7 +76,7 @@ def getFiles(path):
 # api services
 
 
-@app.route("/api/notify", methods=["POST"]) # raspi request
+@app.route("/api/notify", methods=["POST"])  # raspi request
 def notify():
     resp = {}
     deviceid = request.form.get("deviceid")
@@ -84,6 +84,13 @@ def notify():
     if respObj:
         resp["status"] = "success"
         resp["id"] = respObj.id
+        token = dbcon.getToken(deviceid)
+        if token != None:
+            COMMAND = "python send.py 'INTRUSION DETECTED' 'Please take appropriate action.' %s" %token
+            print COMMAND
+            #os.system(COMMAND)
+        else:
+            print "Failed to acquire token for push notification."
     else:
         resp["status"] = "failed"
     resp = json.dumps(resp)
