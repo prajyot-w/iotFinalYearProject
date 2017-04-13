@@ -174,6 +174,8 @@ def checkLoginAPI():
         username = json_obj['username']
         password = json_obj['password']
         tokenid = json_obj['tokenID']
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        print(json_obj)
         if dbcon.login(username, password):
             key = dbcon.generateKey(username)
             displayname = dbcon.AppUser.query.filter_by(email=username).first().username
