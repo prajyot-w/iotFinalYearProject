@@ -179,6 +179,15 @@ def getToken(deviceid):
     token = db.engine.execute(query).first()[0]
     return token
 
+def regToken(username, tokenid):
+    query = "update app_user set pushtoken='%s' where email='%s';" % (tokenid, username)
+    try:
+        db.engine.execute(query)
+        return True
+    except Exception, e:
+        print(str(e))
+    return False
+
 def getnotificationbyid(id):
     print type(id)
     resp = Notification.query.filter_by(id=id).first()

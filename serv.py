@@ -86,9 +86,9 @@ def notify():
         resp["id"] = respObj.id
         token = dbcon.getToken(deviceid)
         if token != None:
-            COMMAND = "python send.py 'INTRUSION DETECTED' 'Please take appropriate action.' %s" %token
+            COMMAND = "python fcm.py 'INTRUSION DETECTED' 'Please take appropriate action.' '%s'" %token
             print COMMAND
-            #os.system(COMMAND)
+            os.system(COMMAND)
         else:
             print "Failed to acquire token for push notification."
     else:
@@ -173,11 +173,13 @@ def checkLoginAPI():
         json_obj = request.get_json()
         username = json_obj['username']
         password = json_obj['password']
+        tokenid = json_obj['tokenID']
         if dbcon.login(username, password):
             key = dbcon.generateKey(username)
             displayname = dbcon.AppUser.query.filter_by(email=username).first().username
             resp = make_response(json.dumps({"status": "success", "username": username, "key": key, "displayname": displayname}))
             API_SESSION[username] = key
+            dbcon.regToken(username, tokenid)
         else:
             print "Wrong Credentials"
             resp = make_response(json.dumps({"status": "failed"}))

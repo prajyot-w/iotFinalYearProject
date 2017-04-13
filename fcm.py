@@ -1,27 +1,13 @@
 # Send to single device.
 from pyfcm import FCMNotification
+import sys
 
-push_service = FCMNotification(api_key="AAAAdL_qwcI:APA91bE71l5R9Gb5jR74cA7jPv4AnT4NgW7Lgd3UVYavBN4iq69qvzEByOnk3oMnbvgx-GR0Ym8ts4_WSdJkCm_mx67nkjs4cUupwWOC4hJ7qQrLkEzsZ8O_HpkA7SgrM4Kc8TtHpAT1")
+push_service = FCMNotification(api_key="AAAARbB5Gyg:APA91bFXFAcqgEa7otXJ2q0yuNlz2VUV1vSd7CPMxcB5kTXq0zuT6i5jhSOxT5tBISGnzl9lB-M8GRWvyt8026rwBhJDYn3jxO4tGs-rNp1VwHeKQxCQdX0lrf4e9H5sw7IkNsUOmpaF")
 
-# OR initialize with proxies
 
-proxy_dict = {
-          "http"  : "http://127.0.0.1",
-          "https" : "http://127.0.0.1",
-        }
-push_service = FCMNotification(api_key="AAAAdL_qwcI:APA91bE71l5R9Gb5jR74cA7jPv4AnT4NgW7Lgd3UVYavBN4iq69qvzEByOnk3oMnbvgx-GR0Ym8ts4_WSdJkCm_mx67nkjs4cUupwWOC4hJ7qQrLkEzsZ8O_HpkA7SgrM4Kc8TtHpAT1", proxy_dict=proxy_dict)
-
-# Your api-key can be gotten from:  https://console.firebase.google.com/project/<project-name>/settings/cloudmessaging
-
-registration_id = "<device registration_id>"
-message_title = "Uber update"
-message_body = "Hi john, your customized news for today is ready"
-result = push_service.notify_single_device(registration_id=registration_id, message_title=message_title, message_body=message_body)
-
-# Send to multiple devices by passing a list of ids.
-registration_ids = ["<device registration_id 1>", "<device registration_id 2>", ...]
-message_title = "Uber update"
-message_body = "Hope you're having fun this weekend, don't forget to check today's news"
-result = push_service.notify_multiple_devices(registration_ids=registration_ids, message_title=message_title, message_body=message_body)
-
-print result
+if __name__ == "__main__":
+    registration_id = sys.argv[3] or "dwG4YE4dPdA:APA91bHjBU9tCweL2OYhoH1lYcd1A9rP3mUEOrRmqBbCtssF18RlA54tZQGIuC3ZmDqaB6vnJfG2yb_vd6dHc4KqhmF9Lx9En9TePediaLeOBj4URJb22Z9y-U12_w4-FbxvzvX7IgF0"
+    message_title = sys.argv[1] or "Uber update"
+    message_body = sys.argv[2] or "Hi john, your customized news for today is ready"
+    result = push_service.notify_single_device(registration_id=registration_id, message_title=message_title, message_body=message_body, sound='Default')
+    print(result)
